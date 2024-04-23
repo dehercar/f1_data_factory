@@ -1,0 +1,9 @@
+{
+	"name": "data-factory-david",
+	"location": "southcentralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "be737116-5526-4769-9ede-eb38fa9f7d26",
+		"tenantId": "ef8a7f13-a8c2-42a9-baa2-6b5c3cb8d38a"
+	}
+}
