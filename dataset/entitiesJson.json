@@ -14,7 +14,17 @@
 				"container": "entities"
 			}
 		},
-		"schema": {}
+		"schema": {
+			"type": "object",
+			"properties": {
+				"entities": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			}
+		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
 }

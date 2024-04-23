@@ -29,6 +29,27 @@
 					"dataset": {
 						"referenceName": "entitiesJson",
 						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "Append variable1",
+				"type": "AppendVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "entities_to_run_var",
+					"value": {
+						"value": "@activity('Lookup1').output.firstRow",
+						"type": "Expression"
 					}
 				}
 			},
@@ -37,7 +58,7 @@
 				"type": "DatabricksNotebook",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "Set variable1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -55,7 +76,7 @@
 					"notebookPath": "/Repos/davidhernandezmty@hotmail.com/exercises_nb/test_parameter",
 					"baseParameters": {
 						"entities_to_run_dict": {
-							"value": "@activity('Lookup1').output.firstRow",
+							"value": "@variables('entities_to_run_var')",
 							"type": "Expression"
 						}
 					}
@@ -64,8 +85,37 @@
 					"referenceName": "linkedServiceDavidDatabricks",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Append variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "entities_to_run_var",
+					"value": {
+						"value": "string(variables('entities_to_run_var'))",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"entities_to_run_var": {
+				"type": "String"
+			}
+		},
 		"annotations": [],
 		"lastPublishTime": "2024-04-23T05:29:25Z"
 	},
