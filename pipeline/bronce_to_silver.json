@@ -46,7 +46,7 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "entities_to_run_var",
+					"variableName": "entities_to_run_arr",
 					"value": {
 						"value": "@activity('Lookup1').output.firstRow",
 						"type": "Expression"
@@ -75,8 +75,8 @@
 				"typeProperties": {
 					"notebookPath": "/Repos/davidhernandezmty@hotmail.com/exercises_nb/test_parameter",
 					"baseParameters": {
-						"entities_to_run_dict": {
-							"value": "@variables('entities_to_run_var')",
+						"entities_to_run_param": {
+							"value": "@variables('entities_to_run_str')",
 							"type": "Expression"
 						}
 					}
@@ -103,16 +103,19 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "entities_to_run_var",
+					"variableName": "entities_to_run_str",
 					"value": {
-						"value": "string(variables('entities_to_run_var'))",
+						"value": "@join(variables('entities_to_run_arr'),',')",
 						"type": "Expression"
 					}
 				}
 			}
 		],
 		"variables": {
-			"entities_to_run_var": {
+			"entities_to_run_arr": {
+				"type": "Array"
+			},
+			"entities_to_run_str": {
 				"type": "String"
 			}
 		},
