@@ -58,7 +58,7 @@
 						"type": "Expression"
 					},
 					"isSequential": false,
-					"batchCount": 14,
+					"batchCount": 2,
 					"activities": [
 						{
 							"name": "Notebook2",
@@ -71,6 +71,7 @@
 								"secureOutput": false,
 								"secureInput": false
 							},
+							"userProperties": [],
 							"typeProperties": {
 								"notebookPath": {
 									"value": "@concat('/Repos/davidhernandezmty@hotmail.com/exercises_nb/silver_transformations/',item(),'_silver') ",
