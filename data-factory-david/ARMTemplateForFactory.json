@@ -103,7 +103,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"notebookPath": {
-											"value": "@concat('/Repos/davidhernandezmty@hotmail.com/exercises_nb/silver_transformations/',item(),'_silver') ",
+											"value": "@concat('/Repos/davidhernandezmty@hotmail.com/exercises_nb/silver_transformations/',item(),'__silver') ",
 											"type": "Expression"
 										},
 										"baseParameters": {
@@ -158,7 +158,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"notebookPath": "/Repos/davidhernandezmty@hotmail.com/exercises_nb/f1 to silver"
+							"notebookPath": "/Repos/davidhernandezmty@hotmail.com/exercises_nb/create_silver_schema"
 						},
 						"linkedServiceName": {
 							"referenceName": "linkedServiceDavidDatabricks",
