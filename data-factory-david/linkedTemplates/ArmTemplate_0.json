@@ -149,11 +149,11 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Lookup1",
+						"name": "Read JSON",
 						"type": "Lookup",
 						"dependsOn": [
 							{
-								"activity": "Notebook1",
+								"activity": "Create Silver Schema",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -188,11 +188,11 @@
 						}
 					},
 					{
-						"name": "ForEach1",
+						"name": "Iiterate Entities",
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "Set variable",
+								"activity": "Store JSON formated variables",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -208,7 +208,7 @@
 							"batchCount": 2,
 							"activities": [
 								{
-									"name": "Notebook2",
+									"name": "Create Silver Table",
 									"type": "DatabricksNotebook",
 									"dependsOn": [],
 									"policy": {
@@ -240,11 +240,11 @@
 						}
 					},
 					{
-						"name": "Set variable",
+						"name": "Store JSON formated variables",
 						"type": "SetVariable",
 						"dependsOn": [
 							{
-								"activity": "Lookup1",
+								"activity": "Read JSON",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -258,13 +258,13 @@
 						"typeProperties": {
 							"variableName": "entities_to_run_arr",
 							"value": {
-								"value": "@activity('Lookup1').output.value[0].entities",
+								"value": "@activity('Read JSON').output.value[0].entities",
 								"type": "Expression"
 							}
 						}
 					},
 					{
-						"name": "Notebook1",
+						"name": "Create Silver Schema",
 						"type": "DatabricksNotebook",
 						"dependsOn": [],
 						"policy": {
