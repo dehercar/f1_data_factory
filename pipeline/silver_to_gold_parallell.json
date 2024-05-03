@@ -1,0 +1,149 @@
+{
+	"name": "silver_to_gold_parallell",
+	"properties": {
+		"activities": [
+			{
+				"name": "Read JSON",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Create Gold Schema",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "entitiesJson",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Iiterate Entities",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Store JSON formated variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('entities_to_run_arr')",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"batchCount": 9,
+					"activities": [
+						{
+							"name": "Create Gold Table",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": {
+									"value": "@concat('/Repos/davidhernandezmty@hotmail.com/exercises_nb/gold/gold_transformations/',item(),'__gold') ",
+									"type": "Expression"
+								},
+								"baseParameters": {
+									"entity": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "linkedServiceDavidDatabricks",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Store JSON formated variables",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Read JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "entities_to_run_arr",
+					"value": {
+						"value": "@activity('Read JSON').output.value[0].entities_gold",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Create Gold Schema",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Repos/davidhernandezmty@hotmail.com/exercises_nb/gold/create_gold_schema"
+				},
+				"linkedServiceName": {
+					"referenceName": "linkedServiceDavidDatabricks",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"variables": {
+			"entities_to_run_arr": {
+				"type": "Array"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-04-23T05:29:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
