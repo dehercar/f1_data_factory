@@ -221,7 +221,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"notebookPath": {
-											"value": "@concat('/Repos/davidhernandezmty@hotmail.com/exercises_nb/silver_transformations/',item(),'__silver') ",
+											"value": "@concat('/Repos/davidhernandezmty@hotmail.com/exercises_nb/silver/silver_transformations/',item(),'__silver') ",
 											"type": "Expression"
 										},
 										"baseParameters": {
@@ -258,7 +258,7 @@
 						"typeProperties": {
 							"variableName": "entities_to_run_arr",
 							"value": {
-								"value": "@activity('Read JSON').output.value[0].entities",
+								"value": "@activity('Read JSON').output.value[0].entities_silver",
 								"type": "Expression"
 							}
 						}
@@ -276,7 +276,165 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"notebookPath": "/Repos/davidhernandezmty@hotmail.com/exercises_nb/create_silver_schema"
+							"notebookPath": "/Repos/davidhernandezmty@hotmail.com/exercises_nb/silver/create_silver_schema"
+						},
+						"linkedServiceName": {
+							"referenceName": "linkedServiceDavidDatabricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"entities_to_run_arr": {
+						"type": "Array"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-04-23T05:29:25Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/entitiesJson')]",
+				"[concat(variables('factoryId'), '/linkedServices/linkedServiceDavidDatabricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/silver_to_gold_parallell')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Read JSON",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Create Gold Schema",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"dataset": {
+								"referenceName": "entitiesJson",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Iiterate Entities",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Store JSON formated variables",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('entities_to_run_arr')",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"batchCount": 9,
+							"activities": [
+								{
+									"name": "Create Gold Table",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": {
+											"value": "@concat('/Repos/davidhernandezmty@hotmail.com/exercises_nb/gold/gold_transformations/',item(),'__gold') ",
+											"type": "Expression"
+										},
+										"baseParameters": {
+											"entity": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "linkedServiceDavidDatabricks",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Store JSON formated variables",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Read JSON",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "entities_to_run_arr",
+							"value": {
+								"value": "@activity('Read JSON').output.value[0].entities_gold",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Create Gold Schema",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Repos/davidhernandezmty@hotmail.com/exercises_nb/gold/create_gold_schema"
 						},
 						"linkedServiceName": {
 							"referenceName": "linkedServiceDavidDatabricks",
@@ -430,6 +588,91 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/inputCsv')]",
 				"[concat(variables('factoryId'), '/datasets/outputParquet')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/bronce_silver_gold')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "bronce",
+						"type": "ExecutePipeline",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "source_to_bronce",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "silver",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "bronce",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "bronce_to_silver_parallel",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "gold",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "silver",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "silver_to_gold_parallell",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/source_to_bronce')]",
+				"[concat(variables('factoryId'), '/pipelines/bronce_to_silver_parallel')]",
+				"[concat(variables('factoryId'), '/pipelines/silver_to_gold_parallell')]"
 			]
 		}
 	]
