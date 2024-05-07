@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "data-factory-david"
 		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
 		"linkToDavidStorageAccount_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkToDavidStorageAccount'"
@@ -14,6 +18,10 @@
 		"linkedServiceDavidDatabricks_accessToken": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accessToken' of 'linkedServiceDavidDatabricks'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://synapsedaviddatalake.dfs.core.windows.net/"
 		},
 		"linkedServiceDavidDatabricks_properties_typeProperties_existingClusterId": {
 			"type": "string",
@@ -46,11 +54,17 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureDataLakeStorage1_accountKey": {
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
+					},
 					"linkToDavidStorageAccount_connectionString": {
 						"value": "[parameters('linkToDavidStorageAccount_connectionString')]"
 					},
 					"linkedServiceDavidDatabricks_accessToken": {
 						"value": "[parameters('linkedServiceDavidDatabricks_accessToken')]"
+					},
+					"AzureDataLakeStorage1_properties_typeProperties_url": {
+						"value": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]"
 					},
 					"linkedServiceDavidDatabricks_properties_typeProperties_existingClusterId": {
 						"value": "[parameters('linkedServiceDavidDatabricks_properties_typeProperties_existingClusterId')]"

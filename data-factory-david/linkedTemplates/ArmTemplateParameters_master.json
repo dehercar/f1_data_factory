@@ -5,11 +5,17 @@
 		"factoryName": {
 			"value": "data-factory-david"
 		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
 		"linkToDavidStorageAccount_connectionString": {
 			"value": ""
 		},
 		"linkedServiceDavidDatabricks_accessToken": {
 			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://synapsedaviddatalake.dfs.core.windows.net/"
 		},
 		"linkedServiceDavidDatabricks_properties_typeProperties_existingClusterId": {
 			"value": "0327-145736-3hxm142n"
