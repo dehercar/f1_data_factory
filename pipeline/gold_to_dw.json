@@ -1,5 +1,5 @@
 {
-	"name": "source_to_bronce",
+	"name": "gold_to_dw",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "inputCsv",
+						"referenceName": "inputParquetGold",
 						"type": "DatasetReference"
 					},
 					"fieldList": [
@@ -28,7 +28,7 @@
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
-						"type": "DelimitedTextReadSettings"
+						"type": "ParquetReadSettings"
 					}
 				}
 			},
@@ -53,7 +53,14 @@
 						{
 							"name": "Copy data1",
 							"type": "Copy",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "file name",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -61,10 +68,19 @@
 								"secureOutput": false,
 								"secureInput": false
 							},
-							"userProperties": [],
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "gold//"
+								},
+								{
+									"name": "Destination",
+									"value": "synasedaviddatalakefs//"
+								}
+							],
 							"typeProperties": {
 								"source": {
-									"type": "DelimitedTextSource",
+									"type": "ParquetSource",
 									"storeSettings": {
 										"type": "AzureBlobStorageReadSettings",
 										"recursive": true,
@@ -75,13 +91,14 @@
 										"enablePartitionDiscovery": false
 									},
 									"formatSettings": {
-										"type": "DelimitedTextReadSettings"
+										"type": "ParquetReadSettings"
 									}
 								},
 								"sink": {
 									"type": "ParquetSink",
 									"storeSettings": {
-										"type": "AzureBlobStorageWriteSettings",
+										"type": "AzureBlobFSWriteSettings",
+										"copyBehavior": "PreserveHierarchy",
 										"metadata": [
 											{
 												"name": "pipeline_name",
@@ -115,16 +132,33 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "inputCsv",
+									"referenceName": "inputParquetGold",
 									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
 								{
-									"referenceName": "outputParquet",
+									"referenceName": "outputParquetDW",
 									"type": "DatasetReference"
 								}
 							]
+						},
+						{
+							"name": "file name",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "filename",
+								"value": {
+									"value": "@item()",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}

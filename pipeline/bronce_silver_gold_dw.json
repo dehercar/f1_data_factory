@@ -1,12 +1,10 @@
 {
-	"name": "bronce_silver_gold",
+	"name": "bronce_silver_gold_dw",
 	"properties": {
 		"activities": [
 			{
 				"name": "bronce",
 				"type": "ExecutePipeline",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"secureInput": false
@@ -65,8 +63,36 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "dw",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "gold",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "gold_to_dw",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		],
+		"variables": {
+			"filename": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
