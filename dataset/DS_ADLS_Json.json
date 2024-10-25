@@ -10,7 +10,9 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "entities.json"
+				"fileName": "filename.json",
+				"folderPath": "folder_name",
+				"fileSystem": "container_name"
 			}
 		},
 		"schema": {
